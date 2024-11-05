@@ -62,19 +62,22 @@ class _MyHomePageState extends State<MyHomePage> {
 
     if (events.statusCode == 200 && events.statusCode == 200) {
       setState(() {
-        List<dynamic> temp = json.decode(events.body);
-        for (var element in temp) {
-          eventsList.add(Event(
-            category: element['category_id'].toString(),
-            name: element['name'],
-            timestamp: DateTime.parse(element['created_at']),
-          ));
-        }
-        temp = json.decode(categories.body);
+        List<dynamic> temp = json.decode(categories.body);
         for (var element in temp) {
           categoriesList.add(Category(
             name: element['name'].toString(),
             serverId: element['id'],
+          ));
+        }
+
+        temp = json.decode(events.body);
+        for (var element in temp) {
+          eventsList.add(Event(
+            category: categoriesList
+                .lastWhere((c) => c.serverId == element['category_id'])
+                .name,
+            name: element['name'],
+            timestamp: DateTime.parse(element['created_at']),
           ));
         }
         eventsList.insert(
@@ -137,9 +140,9 @@ class _MyHomePageState extends State<MyHomePage> {
                             context,
                             MaterialPageRoute(
                                 builder: (c) => const CategoryFormPage()),
-                          ).then((value) => setState(
-                                () => categoriesList.add(value),
-                              ));
+                          ).then((value) => setState(() {
+                                if (value != null) categoriesList.add(value);
+                              }));
                         },
                         child: const Text('Criar nova categoria'),
                       ),
@@ -152,8 +155,9 @@ class _MyHomePageState extends State<MyHomePage> {
                                 categories: categoriesList,
                               ),
                             ),
-                          ).then(
-                              (value) => setState(() => eventsList.add(value)));
+                          ).then((value) => setState(() {
+                                if (value != null) eventsList.add(value);
+                              }));
                         },
                         child: const Text('Registrar novo evento'),
                       ),
