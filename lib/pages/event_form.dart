@@ -125,9 +125,13 @@ class _EventFormState extends State<EventForm> {
                               context,
                               Event(
                                 name: nameController.text,
-                                category: categoryController.text,
-                                timestamp: DateTime.now(),
-                                observation: '',
+                                category: widget.categories
+                                    .lastWhere((element) =>
+                                        element.serverId ==
+                                        selectedCategory!.serverId)
+                                    .name,
+                                timestamp: DateTime.parse(timestampCtrl.text),
+                                observation: observationTxtCtrl.text,
                               ));
                         });
                       }

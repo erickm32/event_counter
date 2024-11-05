@@ -50,14 +50,6 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
-    // eventsList = List.generate(
-    //   10,
-    //   (index) => Event(
-    //       name: "Event $index",
-    //       category: 'cat $index',
-    //       timestamp: DateTime.now(),
-    //       observation: ''),
-    // );
     fetchData();
   }
 
@@ -85,7 +77,8 @@ class _MyHomePageState extends State<MyHomePage> {
             serverId: element['id'],
           ));
         }
-        print(temp);
+        eventsList.insert(
+            0, Event(category: '', name: '', timestamp: DateTime.now()));
         // isLoading = false;
       });
     } else {
@@ -95,8 +88,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    eventsList.insert(
-        0, Event(category: '', name: '', timestamp: DateTime.now()));
     print(eventsList);
     return Scaffold(
       appBar: AppBar(
@@ -142,23 +133,18 @@ class _MyHomePageState extends State<MyHomePage> {
                     children: [
                       TextButton(
                         onPressed: () {
-                          // MaterialPageRoute(
-                          //   builder: (context) => const NewEventPage(),
-                          // );
-                          Navigator.pushNamed(context, 'new_category');
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (c) => const CategoryFormPage()),
+                          ).then((value) => setState(
+                                () => categoriesList.add(value),
+                              ));
                         },
                         child: const Text('Criar nova categoria'),
                       ),
                       TextButton(
                         onPressed: () {
-                          // Navigator.pushNamed(context, 'new_event',
-                          //         arguments: categoriesList)
-                          //     .then(
-                          //   (value) {
-                          //     print("${value} on main");
-                          //     Navigator.of(context).pop();
-                          //   },
-                          // );
                           Navigator.push(
                             context,
                             MaterialPageRoute(
@@ -166,7 +152,8 @@ class _MyHomePageState extends State<MyHomePage> {
                                 categories: categoriesList,
                               ),
                             ),
-                          );
+                          ).then(
+                              (value) => setState(() => eventsList.add(value)));
                         },
                         child: const Text('Registrar novo evento'),
                       ),
