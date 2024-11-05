@@ -13,7 +13,7 @@ class EventCard extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
           ListTile(
-            leading: const Icon(Icons.question_mark),
+            leading: iconForCategory(),
             title: Text(event.name),
             subtitle: Text(event.category),
           ),
@@ -30,5 +30,22 @@ class EventCard extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  Icon iconForCategory() {
+    switch (event.category) {
+      case 'Saúde':
+        return const Icon(Icons.health_and_safety);
+      case 'Estudo':
+        return const Icon(Icons.menu_book);
+      case 'Trabalho':
+        return const Icon(Icons.work);
+      case 'Lazer':
+        return const Icon(Icons.sports_esports_outlined);
+      case 'Rotina Diária':
+        return const Icon(Icons.task_alt);
+      default:
+        return const Icon(Icons.library_books_outlined);
+    }
   }
 }
