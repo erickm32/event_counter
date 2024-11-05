@@ -19,6 +19,8 @@ class _EventFormState extends State<EventForm> {
   final _formKey = GlobalKey<FormState>();
   final nameController = TextEditingController();
   final categoryController = TextEditingController();
+  final observationTxtCtrl = TextEditingController();
+  final timestampCtrl = TextEditingController();
 
   Category? selectedCategory;
 
@@ -65,10 +67,40 @@ class _EventFormState extends State<EventForm> {
                       selectedCategory = selected;
                     },
                   ),
+                  TextFormField(
+                    controller: observationTxtCtrl,
+                    decoration: const InputDecoration(
+                      label: Text('Observation'),
+                    ),
+                  ),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Expanded(
+                        child: TextFormField(
+                          controller: timestampCtrl,
+                          readOnly: true,
+                          onTap: getTimestamp,
+                          decoration: InputDecoration(
+                            label: const Text('Timestamp'),
+                            suffixIcon: timestampCtrl.text != ''
+                                ? IconButton(
+                                    icon: const Icon(Icons.close),
+                                    onPressed: () => setState(() {
+                                          timestampCtrl.clear();
+                                        }))
+                                : null,
+                          ),
+                        ),
+                      ),
+                      IconButton(
+                          onPressed: getTimestamp,
+                          icon: const Icon(Icons.calendar_month)),
+                    ],
+                  ),
                   TextButton(
                     onPressed: () {
                       if (_formKey.currentState!.validate()) {
-                        print(nameController.text);
                         http
                             .post(
                           Uri.parse('http://10.0.2.2:5000/api/events.json'),
@@ -82,6 +114,8 @@ class _EventFormState extends State<EventForm> {
                                         element.serverId ==
                                         selectedCategory!.serverId)
                                     .serverId,
+                                'observation': observationTxtCtrl.text,
+                                'timestamp': timestampCtrl.text
                               },
                             },
                           ),
@@ -107,5 +141,32 @@ class _EventFormState extends State<EventForm> {
         ],
       ),
     );
+  }
+
+  void getTimestamp() {
+    showDatePicker(
+      context: context,
+      firstDate: DateTime(DateTime.now().year - 1),
+      lastDate: DateTime(DateTime.now().year + 1),
+    ).then((dateValue) {
+      if (dateValue != null) {
+        showTimePicker(
+          context: context,
+          initialTime: TimeOfDay.now(),
+        ).then((timeValue) {
+          setState(() {
+            timestampCtrl.text = timeValue != null
+                ? DateTime(
+                    dateValue.year,
+                    dateValue.month,
+                    dateValue.day,
+                    timeValue.hour,
+                    timeValue.minute,
+                  ).toIso8601String()
+                : DateTime.now().toIso8601String();
+          });
+        });
+      }
+    });
   }
 }
